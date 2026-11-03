@@ -1,0 +1,57 @@
+# Sydney Tree Connect: Apache / LiteSpeed rules (Hostinger shared hosting)
+
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Canonical host and HTTPS for the production domain only, so staging and
+  # temporary preview domains keep working. Enable SSL in hPanel first.
+  RewriteCond %{HTTP_HOST} ^www\.sydneytreeconnect\.com$ [NC]
+  RewriteRule ^ https://sydneytreeconnect.com%{REQUEST_URI} [L,R=301]
+  RewriteCond %{HTTP_HOST} ^sydneytreeconnect\.com$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://sydneytreeconnect.com%{REQUEST_URI} [L,R=301]
+
+  # Repository files that must never be served (deployment copies the whole repo).
+  RewriteRule ^(docs|scripts|tests|private|api/lib)(/|$) - [R=404,L]
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteRule (^|/)\. - [R=404,L]
+  RewriteRule \.(md|env|example|py|cjs|mjs|ttf|log|sh|ini|lock)$ - [R=404,L,NC]
+  RewriteRule ^(package(-lock)?\.json|composer\.(json|lock))$ - [R=404,L,NC]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-tlTtfpdsMQSdcfX3DLM1fgx/y++BLw+48vFj+5cTJa0='; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+  # Enable HSTS only after HTTPS has been confirmed working on the final domain:
+  # Header always set Strict-Transport-Security "max-age=31536000"
+
+  <FilesMatch "\.(avif|webp|jpg|png|svg|ico|woff2)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.(html|xml|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType image/avif .avif
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json application/manifest+json text/xml application/xml
+</IfModule>

@@ -1,0 +1,9 @@
+# Production robots rules for https://sydneytreeconnect.com
+# Staging is kept out of search results by the STAGING-NOINDEX meta tags in each
+# page (see docs/launch-checklist.md), not by this file.
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /thank-you.html
+
+Sitemap: https://sydneytreeconnect.com/sitemap.xml

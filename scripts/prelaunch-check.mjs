@@ -1,0 +1,78 @@
+// Pre-launch check. Lists anything that must be resolved before the site is
+// made indexable or the form is switched on. Exits 1 while blockers remain.
+//
+// Usage: node scripts/prelaunch-check.mjs
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const pages = ["index.html", "privacy.html", "terms.html", "thank-you.html", "404.html"];
+const blockers = [];
+const warnings = [];
+const ok = [];
+
+const read = (f) => fs.readFileSync(path.join(root, f), "utf8");
+
+for (const p of pages) {
+  const html = read(p);
+  const placeholders = [...html.matchAll(/\[Owner to confirm:([^\]]*)\]/g)].map((m) => m[1].trim());
+  if (placeholders.length) blockers.push(`${p}: ${placeholders.length} owner placeholder(s): ${[...new Set(placeholders)].join("; ")}`);
+  if (html.includes("STAGING-NOINDEX")) blockers.push(`${p}: staging noindex tag still present (remove at launch)`);
+  if (/draft-banner/.test(html)) blockers.push(`${p}: draft banner still present (remove after owner/legal review)`);
+  if (/href="tel:/i.test(html)) blockers.push(`${p}: contains a tel: link (no business phone number allowed)`);
+  if (/example\.(com|test)|localhost|127\.0\.0\.1/.test(html)) blockers.push(`${p}: contains a placeholder or local domain`);
+  if (p === "index.html" && /data-provisional-service/.test(html)) {
+    warnings.push("index.html: service cards are marked provisional. Confirm each with the contractor, then remove the data-provisional-service attribute (and any unconfirmed card).");
+  }
+  if (["thank-you.html", "404.html"].includes(p) && !/name="robots" content="noindex/.test(html)) blockers.push(`${p}: must stay noindex`);
+}
+
+const sitemap = read("sitemap.xml");
+const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+if (locs.some((l) => !l.startsWith("https://sydneytreeconnect.com/"))) blockers.push("sitemap.xml: contains a URL outside https://sydneytreeconnect.com/");
+if (locs.some((l) => /thank-you|404/.test(l))) blockers.push("sitemap.xml: must not list thank-you or 404 pages");
+else ok.push(`sitemap.xml lists ${locs.length} canonical pages`);
+
+if (!/Sitemap: https:\/\/sydneytreeconnect\.com\/sitemap\.xml/.test(read("robots.txt"))) blockers.push("robots.txt: missing production sitemap line");
+if (/Disallow:\s*\/\s*$/m.test(read("robots.txt"))) blockers.push("robots.txt: blocks the whole site");
+
+// Secrets and private files that must never be in the repository
+const walk = (dir) =>
+  fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    if ([".git", "node_modules"].includes(d.name)) return [];
+    const p = path.join(dir, d.name);
+    return d.isDirectory() ? walk(p) : [p];
+  });
+const files = walk(root).map((f) => path.relative(root, f).replace(/\\/g, "/"));
+const isPrivate = (f) => /(^|\/)\.env$|\.env$|(^|\/)config\.php$|(^|\/)(uploads|submissions|enquiries|private|stc-rate-limit)\/|\.eml$/.test(f) && !f.endsWith(".env.example");
+let tracked = null;
+try {
+  tracked = execFileSync("git", ["ls-files", "--cached"], { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
+} catch {}
+if (tracked) {
+  const leaked = tracked.filter(isPrivate);
+  if (leaked.length) blockers.push(`Private files are tracked by git (remove with git rm --cached): ${leaked.join(", ")}`);
+  else ok.push("No private files are tracked by git");
+} else {
+  const present = files.filter(isPrivate);
+  if (present.length) blockers.push(`Private files present and git is unavailable to confirm they are ignored: ${present.join(", ")}`);
+}
+if (fs.existsSync(path.join(root, "private"))) {
+  warnings.push("private/ exists locally (git-ignored, blocked by .htaccess). Never upload it into public_html; the live settings file belongs in domains/sydneytreeconnect.com/private/.");
+}
+const secretPattern = /(SMTP_PASS|PASSWORD|API_KEY|SECRET)\s*[=:]\s*["']?(?!replace-with|test-|browser-test|""|''|\s*$)[^\s"']{8,}/i;
+for (const f of files.filter((f) => /\.(php|js|mjs|cjs|html|json|md|example|txt|py)$/.test(f) && !f.startsWith("api/lib/"))) {
+  const text = read(f);
+  const line = text.split("\n").find((l) => secretPattern.test(l) && !/getenv|\$get\(|\$config\[|process\.env|RATE_LIMIT_SECRET must|_SECRET=replace|SECRET\)\s*[=:]/.test(l));
+  if (line) warnings.push(`${f}: possible credential, review manually`);
+}
+
+console.log("\nSydney Tree Connect pre-launch check\n");
+ok.forEach((m) => console.log("  OK       " + m));
+warnings.forEach((m) => console.log("  WARNING  " + m));
+blockers.forEach((m) => console.log("  BLOCKER  " + m));
+console.log(`\n${blockers.length} blocker(s), ${warnings.length} warning(s).`);
+console.log("Also confirm manually: form env file configured, ENQUIRY_ENABLED=true, a real test enquiry reached the inbox.\n");
+process.exit(blockers.length ? 1 : 0);

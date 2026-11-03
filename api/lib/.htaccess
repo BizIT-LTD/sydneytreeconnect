@@ -1,0 +1,2 @@
+# Library code is included by api/enquiry.php only. Never serve it directly.
+Require all denied

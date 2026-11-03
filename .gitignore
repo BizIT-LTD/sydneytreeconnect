@@ -1,0 +1,32 @@
+# Secrets and environment files (real config lives outside the web root)
+.env
+.env.*
+!.env.example
+*.env
+!.env.example
+config.php
+api/config.php
+private/
+
+# Customer data: never commit enquiries, uploaded photos or rate-limit records
+uploads/
+submissions/
+enquiries/
+stc-rate-limit/
+*.eml
+
+# Private agreements and working documents
+agreements/
+contracts/
+*.private.*
+
+# Tooling and OS files
+node_modules/
+vendor/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.vscode/
+.idea/
+tests/output/
