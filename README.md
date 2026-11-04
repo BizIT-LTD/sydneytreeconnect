@@ -4,7 +4,7 @@ Source for **https://sydneytreeconnect.com**, an enquiry and referral website fo
 
 The site does **not** carry out tree work and displays **no business phone number**.
 
-> **Status: staging build, not ready to launch.** Owner details, contractor confirmation and form configuration are still needed. See [docs/launch-checklist.md](docs/launch-checklist.md) and run `node scripts/prelaunch-check.mjs`.
+> **Status: live, with the enquiry form enabled (delivery verified 4 Nov 2026).** The home page is indexable. The privacy notice and terms are drafts and stay noindex until the owner decisions are resolved. See [docs/launch-checklist.md](docs/launch-checklist.md) and run `node scripts/prelaunch-check.mjs`.
 
 ## What's here
 
@@ -167,8 +167,8 @@ Never paste the App Password into chat, email, a ticket or any file inside the p
 ## Search Console and SEO
 
 - All canonical URLs, Open Graph URLs, structured data and the sitemap use `https://sydneytreeconnect.com`.
-- Structured data describes an Organization (the referral website) with no address, phone, rating or arborist claims.
-- **Staging is noindexed.** index.html, privacy.html and terms.html carry a `STAGING-NOINDEX` robots meta tag. Remove it at launch (see the checklist). thank-you.html and 404.html are always noindex and aren't in the sitemap. robots.txt is already the production version.
+- Structured data describes a WebSite only (no Organization, address, phone, rating or arborist claims).
+- **Indexing (4 Nov 2026):** the home page is indexable and is the only URL in sitemap.xml. privacy.html and terms.html keep a `STAGING-NOINDEX` robots meta tag until they are approved. thank-you.html and 404.html are always noindex. robots.txt blocks only `/api/`, so crawlers can read those noindex tags.
 - After launch: add a Domain property in Google Search Console, verify it by DNS, submit `/sitemap.xml`, and request indexing of the home page with URL Inspection. Requesting indexing doesn't guarantee indexing or rankings, and first-page ranking is a goal, not a promise.
 - Future pages: write genuinely useful service or guidance pages, and location pages only for confirmed coverage with original content. Don't create many near-identical suburb pages.
 

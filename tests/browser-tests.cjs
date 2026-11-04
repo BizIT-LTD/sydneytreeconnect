@@ -136,7 +136,8 @@ async function fillValid(page, overrides = {}) {
         check(`${url} is noindex and has no canonical`, /noindex/.test(meta.robots) && !meta.canonical);
       } else {
         check(`${url} canonical on production domain`, meta.canonical.startsWith("https://sydneytreeconnect.com/"), meta.canonical);
-        notes.push(`${url} robots meta (staging): "${meta.robots}"`);
+        if (url === "/") check("/ is indexable (no robots noindex/nofollow)", !/noindex|nofollow/i.test(meta.robots), meta.robots);
+        else check(`${url} stays noindex until approved`, /noindex/.test(meta.robots), meta.robots);
       }
       await page.evaluate(axeSource); // via DevTools, so the page CSP stays enforced
       const axe = await page.evaluate(async () => {

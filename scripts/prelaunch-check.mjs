@@ -42,6 +42,17 @@ if (locs.some((l) => /thank-you|404/.test(l))) blockers.push("sitemap.xml: must 
 else ok.push(`sitemap.xml lists ${locs.length} canonical pages`);
 
 if (!/Sitemap: https:\/\/sydneytreeconnect\.com\/sitemap\.xml/.test(read("robots.txt"))) blockers.push("robots.txt: missing production sitemap line");
+
+// Indexing consistency: sitemap URLs must be indexable, and noindex pages must stay crawlable.
+const fileFor = (loc) => { const p = new URL(loc).pathname; return p === "/" ? "index.html" : p.slice(1); };
+const noindex = (f) => /<meta name="robots" content="[^"]*noindex/i.test(read(f));
+const listedNoindex = locs.filter((l) => fs.existsSync(path.join(root, fileFor(l))) && noindex(fileFor(l)));
+if (listedNoindex.length) blockers.push(`sitemap.xml lists noindex page(s): ${listedNoindex.join(", ")}`);
+if (noindex("index.html")) blockers.push("index.html: home page is noindex");
+const disallowed = [...read("robots.txt").matchAll(/^Disallow:\s*(\S+)/gim)].map((m) => m[1]);
+const hidden = pages.filter((p) => noindex(p) && disallowed.some((d) => ("/" + p).startsWith(d)));
+if (hidden.length) blockers.push(`robots.txt blocks noindex page(s), so crawlers can't read the tag: ${hidden.join(", ")}`);
+else ok.push("Noindex pages are crawlable, and sitemap.xml lists only indexable pages");
 if (/Disallow:\s*\/\s*$/m.test(read("robots.txt"))) blockers.push("robots.txt: blocks the whole site");
 
 // Secrets and private files that must never be in the repository

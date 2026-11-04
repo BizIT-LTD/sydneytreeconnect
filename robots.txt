@@ -1,9 +1,9 @@
 # Production robots rules for https://sydneytreeconnect.com
-# Staging is kept out of search results by the STAGING-NOINDEX meta tags in each
-# page (see docs/launch-checklist.md), not by this file.
+# Pages that must stay out of search results (privacy, terms, thank-you, 404) use a
+# noindex robots meta tag. They are deliberately NOT disallowed here, so crawlers can
+# fetch them and read that tag. Only the form endpoint is blocked.
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /thank-you.html
 
 Sitemap: https://sydneytreeconnect.com/sitemap.xml

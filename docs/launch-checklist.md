@@ -1,6 +1,6 @@
 # Launch checklist
 
-Last updated: 4 November 2026. The site is live at https://sydneytreeconnect.com (still noindex) and the repository is at https://github.com/BizIT-LTD/sydneytreeconnect (branch `main`).
+Last updated: 4 November 2026. The site is live at https://sydneytreeconnect.com. The home page is indexable; privacy and terms stay noindex until approved and the repository is at https://github.com/BizIT-LTD/sydneytreeconnect (branch `main`).
 
 The public pages have no placeholders (removed 4 Nov 2026). Unresolved decisions are tracked only here, and the public wording was written to stay accurate without them. Don't publish anything below until the owner has confirmed it. `node scripts/prelaunch-check.mjs` reports every unticked item in section 1 as a blocker.
 
@@ -60,12 +60,14 @@ Work through this list in order. `node scripts/prelaunch-check.mjs` checks the f
 - [x] Repository pushed to https://github.com/BizIT-LTD/sydneytreeconnect (`main`). `private/` is git-ignored and untracked. Keep deploying only tracked files so `private/` never reaches `public_html`.
 - [ ] After HTTPS has worked reliably for a few days, consider enabling the HSTS header in .htaccess.
 
-## 4. Make the site indexable (only after sections 1 to 3 are done)
+## 4. Indexing
 
-- [ ] Remove the two `STAGING-NOINDEX` lines (comment and meta tag) from index.html, privacy.html and terms.html. Keep the noindex tags on thank-you.html and 404.html.
-- [ ] Remove `Disallow: /thank-you.html` from robots.txt. While robots.txt blocks the page, Google can't read its noindex tag and may still list the URL. The noindex meta tag alone keeps it out of results.
-- [ ] Update `<lastmod>` dates in sitemap.xml.
-- [ ] Run `node scripts/prelaunch-check.mjs` and confirm 0 blockers.
+- [x] **Home page made indexable (owner decision, 4 Nov 2026).** Its `STAGING-NOINDEX` lines are removed. No `X-Robots-Tag` header is sent for pages (only `/api/enquiry.php` sends one). sitemap.xml lists only `/`.
+- [x] robots.txt disallows only `/api/`. `Disallow: /thank-you.html` was removed so crawlers can read the noindex tags on thank-you.html, 404.html, privacy.html and terms.html.
+- [ ] **Check that real Googlebot can fetch the site.** Hostinger's server returns 403 to requests that only claim to be Googlebot or Bingbot (fake-crawler protection; tested 4 Nov 2026 from a non-Google IP, normal browsers get 200). Genuine Google crawlers should pass, but confirm it with Search Console URL Inspection > “Test live URL” on the home page. If that shows 403 or “Blocked”, ask Hostinger support to allow verified search engine crawlers.
+- [ ] privacy.html and terms.html: keep `noindex, nofollow` until section 1 is resolved and the pages are approved. Then remove their `STAGING-NOINDEX` comment and meta tag and add both URLs to sitemap.xml.
+- [x] thank-you.html and 404.html stay `noindex, follow` permanently and are never in the sitemap.
+- [ ] Run `node scripts/prelaunch-check.mjs` and confirm 0 blockers before treating the site as fully launched.
 - [ ] Run the tests (README, “Testing”).
 
 ## 5. Google Search Console
