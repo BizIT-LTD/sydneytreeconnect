@@ -96,10 +96,13 @@ async function fillValid(page, overrides = {}) {
   fs.mkdirSync(shots, { recursive: true });
 
   const browser = await puppeteer.launch({ executablePath: browserPath, headless: true });
-  const pages = ["/", "/privacy.html", "/terms.html", "/thank-you.html", "/404.html"];
+  const indexable = ["/", "/tree-removal/", "/tree-pruning/", "/stump-grinding/", "/tree-removal-cost/", "/council-tree-rules/", "/council-tree-rules/ku-ring-gai/", "/council-tree-rules/hornsby/", "/council-tree-rules/northern-beaches/"];
+  const pages = [...indexable, "/privacy.html", "/terms.html", "/thank-you.html", "/404.html"];
 
   try {
     console.log("\nPages: console errors, failed requests, headings, metadata, accessibility");
+    const titles = new Map();
+    const descs = new Map();
     for (const url of pages) {
       const page = await browser.newPage();
       const errors = [];
@@ -127,6 +130,8 @@ async function fillValid(page, overrides = {}) {
       }));
       check(`${url} exactly one h1`, meta.h1 === 1, meta.h1);
       check(`${url} title and description present`, meta.title.length > 10 && meta.desc.length > 30);
+      titles.set(url, meta.title);
+      descs.set(url, meta.desc);
       check(`${url} lang en-AU`, meta.lang === "en-AU");
       check(`${url} no skipped heading levels`, !meta.skipped);
       check(`${url} no click-to-call links`, meta.telLinks === 0);
@@ -136,7 +141,8 @@ async function fillValid(page, overrides = {}) {
         check(`${url} is noindex and has no canonical`, /noindex/.test(meta.robots) && !meta.canonical);
       } else {
         check(`${url} canonical on production domain`, meta.canonical.startsWith("https://sydneytreeconnect.com/"), meta.canonical);
-        if (url === "/") check("/ is indexable (no robots noindex/nofollow)", !/noindex|nofollow/i.test(meta.robots), meta.robots);
+        check(`${url} canonical matches its own URL`, meta.canonical === "https://sydneytreeconnect.com" + url, meta.canonical);
+        if (indexable.includes(url)) check(`${url} is indexable (no robots noindex/nofollow)`, !/noindex|nofollow/i.test(meta.robots), meta.robots);
         else check(`${url} stays noindex until approved`, /noindex/.test(meta.robots), meta.robots);
       }
       await page.evaluate(axeSource); // via DevTools, so the page CSP stays enforced
@@ -148,29 +154,37 @@ async function fillValid(page, overrides = {}) {
       await page.close();
     }
 
+    const dupes = (m) => [...m].filter(([u, v]) => [...m].some(([u2, v2]) => u2 !== u && v2 === v)).map(([u]) => u);
+    check("Page titles are unique", dupes(titles).length === 0, dupes(titles).join(", "));
+    check("Meta descriptions are unique", dupes(descs).length === 0, dupes(descs).join(", "));
+    const longDesc = indexable.filter((u) => descs.get(u).length > 170);
+    check("Indexable page descriptions are 170 characters or fewer", longDesc.length === 0, longDesc.map((u) => `${u} (${descs.get(u).length})`).join(", "));
+
     console.log("\nResponsive layouts");
     const sizes = [[360, 740, "mobile-360"], [390, 844, "mobile-390"], [768, 1024, "tablet-768"], [1024, 768, "tablet-1024"], [1440, 900, "desktop-1440"]];
     for (const [w, h, label] of sizes) {
       const page = await browser.newPage();
       await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
-      for (const url of ["/", "/privacy.html", "/thank-you.html"]) {
+      for (const url of ["/", "/privacy.html", "/thank-you.html", "/tree-removal/", "/council-tree-rules/hornsby/"]) {
         await page.goto(BASE + url, { waitUntil: "networkidle0" });
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
         check(`${label} ${url} no horizontal scroll`, overflow <= 0, `overflow ${overflow}px`);
       }
       await page.goto(BASE + "/", { waitUntil: "networkidle0" });
       const info = await page.evaluate(() => {
-        const img = document.querySelector(".hero__media img");
         const logo = document.querySelector(".brand img").getBoundingClientRect();
         const cta = document.querySelector(".site-header .button").getBoundingClientRect();
-        return { src: img.currentSrc, loaded: img.complete && img.naturalWidth > 0, logoW: logo.width, logoH: logo.height, ctaRight: cta.right, vw: window.innerWidth, headerH: document.querySelector(".site-header").offsetHeight };
+        return { logoW: logo.width, logoH: logo.height, ctaRight: cta.right, vw: window.innerWidth, headerH: document.querySelector(".site-header").offsetHeight };
       });
-      check(`${label} hero image loaded as WebP (${path.basename(info.src)})`, info.loaded && /\.webp$/.test(info.src));
       const hero = await page.evaluate(() => {
-        const r = document.querySelector(".hero__media img").getBoundingClientRect();
-        return { ratio: r.width / r.height, eager: document.querySelector(".hero__media img").loading !== "lazy", caption: document.querySelector(".hero__media figcaption").textContent };
+        const lead = document.querySelector(".hero__lead").getBoundingClientRect();
+        const form = document.getElementById("quick-form").getBoundingClientRect();
+        const more = document.querySelector(".hero__more").getBoundingClientRect();
+        return { leadBottom: Math.round(lead.bottom), leadRight: Math.round(lead.right), formTop: Math.round(form.top), formLeft: Math.round(form.left), formRight: Math.round(form.right), moreTop: Math.round(more.top), vw: window.innerWidth, heroImg: !!document.querySelector(".hero img, .hero figure") };
       });
-      check(`${label} hero not lazy-loaded, captioned as AI-generated`, hero.eager && /AI-generated illustrative image/.test(hero.caption), JSON.stringify(hero));
+      check(`${label} hero has the step 1 form and no image`, !hero.heroImg && hero.formRight <= hero.vw, JSON.stringify(hero));
+      if (w < 900) check(`${label} hero form stacks below the introduction, before the extras`, hero.formTop >= hero.leadBottom && hero.moreTop > hero.formTop, JSON.stringify(hero));
+      else check(`${label} hero form sits beside the introduction`, hero.formLeft >= hero.leadRight, JSON.stringify(hero));
       await page.evaluate(() => document.getElementById("services").scrollIntoView());
       await page.waitForFunction(() => [...document.querySelectorAll(".card__figure img")].every((i) => i.complete && i.naturalWidth > 0), { timeout: 10000 }).catch(() => {});
       const svc = await page.evaluate(() => [...document.querySelectorAll(".card--media")].map((c) => {
@@ -226,6 +240,97 @@ async function fillValid(page, overrides = {}) {
       await page.close();
     }
 
+    console.log("\nService links preselect the form");
+    {
+      const page = await browser.newPage();
+      for (const s of ["tree-removal", "tree-pruning", "stump-grinding"]) {
+        await page.goto(`${BASE}/?service=${s}#enquiry`, { waitUntil: "networkidle0" });
+        check(`/?service=${s} preselects "${s}"`, (await page.$eval("#service", (el) => el.value)) === s);
+      }
+      await page.goto(`${BASE}/?service=%22%3E%3Cscript%3E#enquiry`, { waitUntil: "networkidle0" });
+      check("Unknown service value leaves the select empty", (await page.$eval("#service", (el) => el.value)) === "");
+      await page.goto(`${BASE}/?service=stump-grinding`, { waitUntil: "networkidle0" });
+      check("Service preselect also fills the hero form", (await page.$eval("#q-service", (el) => el.value)) === "stump-grinding");
+      await page.close();
+    }
+
+    console.log("\nHero form: validation and transfer to the full form");
+    {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 390, height: 844 });
+      const posts = [];
+      page.on("request", (r) => r.method() !== "GET" && posts.push(r.url()));
+      const navs = [];
+      page.on("framenavigated", (f) => f === page.mainFrame() && navs.push(f.url()));
+      await page.goto(BASE + "/", { waitUntil: "networkidle0" });
+      const dom = await page.evaluate(() => {
+        const ids = [...document.querySelectorAll("[id]")].map((e) => e.id);
+        return {
+          dupes: ids.filter((id, i) => ids.indexOf(id) !== i),
+          named: [...document.querySelectorAll("#quick-form [name]")].length,
+          labelled: [...document.querySelectorAll("#quick-form input, #quick-form select")].every((el) => document.querySelector(`label[for="${el.id}"]`)),
+          button: document.querySelector("#quick-form button").textContent.trim(),
+        };
+      });
+      check("Home page has no duplicate IDs", dom.dupes.length === 0, dom.dupes.join(", "));
+      check("Hero form fields are labelled and have no name attributes (nothing can be posted from it)", dom.named === 0 && dom.labelled, JSON.stringify(dom));
+      check("Hero button reads 'Continue your enquiry'", dom.button === "Continue your enquiry", dom.button);
+
+      // Keyboard: Tab through the hero form and continue with Enter, with nothing filled in
+      await page.focus("#q-name");
+      const order = ["q-name"];
+      for (let i = 0; i < 6; i++) {
+        await page.keyboard.press("Tab");
+        order.push(await page.evaluate(() => document.activeElement.id || document.activeElement.textContent.trim()));
+      }
+      check("Hero form tab order follows the fields, then the button", order.join(">") === "q-name>q-email>q-phone>q-suburb>q-postcode>q-service>Continue your enquiry", order.join(">"));
+      await page.keyboard.press("Enter");
+      let st = await page.evaluate(() => ({
+        focused: document.activeElement.id,
+        invalid: [...document.querySelectorAll('#quick-form [aria-invalid="true"]')].map((e) => e.id),
+        nameErr: document.getElementById("q-name-error").textContent,
+        note: document.getElementById("quick-note").textContent,
+      }));
+      check("Empty continue flags the required hero fields and focuses the first", st.focused === "q-name" && ["q-name", "q-email", "q-suburb", "q-postcode", "q-service"].every((id) => st.invalid.includes(id)) && !st.invalid.includes("q-phone") && st.nameErr === "Enter your name." && !st.note, JSON.stringify(st));
+
+      await page.type("#q-name", "Hero Person");
+      await page.type("#q-email", "bad@");
+      await page.type("#q-phone", "12");
+      await page.type("#q-suburb", "Hornsby");
+      await page.type("#q-postcode", "3000");
+      await page.select("#q-service", "tree-removal");
+      st = await page.evaluate(() => ({ nameErr: document.getElementById("q-name-error").textContent, full: ["name", "email", "suburb", "service"].map((k) => document.getElementById(k).value) }));
+      check("Hero values copy into the full form as they are typed, and corrected fields clear", st.nameErr === "" && st.full.join("|") === "Hero Person|bad@|Hornsby|tree-removal", JSON.stringify(st));
+      await page.click("#quick-form button");
+      st = await page.evaluate(() => ["email", "phone", "postcode"].map((k) => document.getElementById("q-" + k + "-error").textContent));
+      check("Hero form uses the full form's email, phone and NSW postcode rules", /valid email/.test(st[0]) && /valid phone/.test(st[1]) && /NSW postcode/.test(st[2]), JSON.stringify(st));
+
+      for (const [k, v] of [["email", "hero.test@example.test"], ["phone", "0400 333 444"], ["postcode", "2077"]]) {
+        await page.$eval("#q-" + k, (el) => (el.value = ""));
+        await page.type("#q-" + k, v);
+      }
+      await page.focus("#quick-form button");
+      await page.keyboard.press("Enter");
+      await sleep(900);
+      st = await page.evaluate(() => {
+        const note = document.getElementById("quick-note");
+        const r = note.getBoundingClientRect();
+        return {
+          full: ["name", "email", "phone", "suburb", "postcode", "service"].map((k) => document.getElementById(k).value),
+          focused: document.activeElement.name + ":" + document.activeElement.value,
+          note: note.textContent,
+          noteTop: Math.round(r.top),
+          vh: window.innerHeight,
+          stored: (() => { try { return localStorage.length + sessionStorage.length; } catch (e) { return 0; } })(),
+        };
+      });
+      check("Continue transfers all six details into the full form", st.full.join("|") === "Hero Person|hero.test@example.test|0400 333 444|Hornsby|2077|tree-removal", JSON.stringify(st.full));
+      check("Continue scrolls to the remaining questions and focuses the contact method", st.noteTop >= 0 && st.noteTop < st.vh / 2 && st.focused === "contact_method:email" && /remaining questions/.test(st.note), JSON.stringify(st));
+      check("Continuing sends nothing, stores nothing and doesn't leave the page", posts.length === 0 && st.stored === 0 && navs.length === 1, JSON.stringify({ posts, navs, stored: st.stored }));
+      await page.screenshot({ path: path.join(shots, "hero-continue-mobile.png") });
+      await page.close();
+    }
+
     console.log("\nNo-JavaScript fallback");
     {
       const page = await browser.newPage();
@@ -234,6 +339,17 @@ async function fillValid(page, overrides = {}) {
       await page.goto(BASE + "/", { waitUntil: "networkidle0" });
       const r = await page.evaluate(() => ({ navVisible: getComputedStyle(document.getElementById("site-nav")).display !== "none", toggleHidden: getComputedStyle(document.querySelector(".nav-toggle")).display === "none", action: document.getElementById("enquiry-form").getAttribute("action") }));
       check("Without JS, nav links are visible and form posts to handler", r.navVisible && r.toggleHidden && r.action === "/api/enquiry.php");
+      const h = await page.evaluate(() => ({
+        quick: getComputedStyle(document.getElementById("quick-form")).display,
+        fallback: getComputedStyle(document.querySelector(".quick-fallback")).display,
+        link: document.querySelector(".quick-fallback a").getAttribute("href"),
+      }));
+      check("Without JS, the hero shows a link to the full form instead of the step 1 form", h.quick === "none" && h.fallback !== "none" && h.link === "#enquiry", JSON.stringify(h));
+      await page.click(".quick-fallback a");
+      await sleep(300);
+      const reached = await page.evaluate(() => ({ hash: location.hash, top: Math.round(document.getElementById("enquiry").getBoundingClientRect().top) }));
+      check("Without JS, the hero link reaches the full form", reached.hash === "#enquiry" && Math.abs(reached.top) < 120, JSON.stringify(reached));
+      await page.screenshot({ path: path.join(shots, "hero-no-js-mobile.png") });
       await page.close();
     }
 
@@ -382,6 +498,30 @@ async function fillValid(page, overrides = {}) {
       await p.screenshot({ path: path.join(shots, "thank-you-mobile.png"), fullPage: true });
       await p.close();
     }
+
+    console.log("\nForm: real submission started in the hero form");
+    {
+      const p = await browser.newPage();
+      await p.setViewport({ width: 1280, height: 800 });
+      await p.goto(BASE + "/?service=tree-pruning", { waitUntil: "networkidle0" });
+      for (const [k, v] of [["name", "Hero Flow"], ["email", "hero.flow@example.test"], ["suburb", "Turramurra"], ["postcode", "2074"]]) await p.type("#q-" + k, v);
+      await p.click("#quick-form button");
+      await sleep(600);
+      // Only the remaining questions are answered in the full form
+      await p.type("#description", "DUMMY BROWSER TEST. Hero form flow, pruning over the roof.");
+      await p.click('input[name="property_authority"][value="owner"]');
+      await p.click('input[name="council_status"][value="not-sure"]');
+      await p.click("#consent");
+      await p.$eval("#form_started", (el) => (el.value = String(Date.now() - 20000)));
+      const before = fs.existsSync(mailDir) ? fs.readdirSync(mailDir).length : 0;
+      await Promise.all([p.waitForNavigation({ waitUntil: "networkidle0", timeout: 30000 }), p.click("#submit-button")]);
+      check("Hero flow: full form submits and redirects to /thank-you.html", new URL(p.url()).pathname === "/thank-you.html", p.url());
+      await sleep(300);
+      const files = fs.existsSync(mailDir) ? fs.readdirSync(mailDir).sort() : [];
+      const eml = files.length ? fs.readFileSync(path.join(mailDir, files[files.length - 1]), "utf8") : "";
+      check("Hero flow: one email with the details entered in the hero form", files.length === before + 1 && /Hero Flow/.test(eml) && /hero\.flow@example\.test/.test(eml) && /Turramurra/.test(eml) && /2074/.test(eml) && /Consent given: Yes/.test(eml), `files ${before} -> ${files.length}`);
+      await p.close();
+    }
     check("No script errors during form tests", formErrors.length === 0, formErrors.join(" | "));
     await page.close();
 
@@ -421,7 +561,8 @@ async function fillValid(page, overrides = {}) {
         }
       }
       check(`All internal links and anchors resolve (${hrefs.size} checked)`, bad.length === 0, bad.join("\n        "));
-      check("Email links use only the confirmed privacy address", mailto.size > 0 && [...mailto].every((h) => h === "mailto:sydneytree278@gmail.com"), [...mailto].join(", "));
+      // Our only address is the confirmed privacy address; council guides may link to official council addresses.
+      check("Email links use only the confirmed privacy address or official NSW council addresses", mailto.has("mailto:sydneytree278@gmail.com") && [...mailto].every((h) => h === "mailto:sydneytree278@gmail.com" || /^mailto:[^@]+@[a-z-]+\.nsw\.gov\.au$/.test(h)), [...mailto].join(", "));
       fs.writeFileSync(path.join(shots, "external-links.txt"), [...external].join("\n") + "\n");
       await p.close();
     }

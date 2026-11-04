@@ -8,7 +8,7 @@ The owner supplied three images on 4 November 2026. Their embedded C2PA content 
 
 | Original (kept with its C2PA credentials, not served) | Used for | Web files | Caption on the page |
 | --- | --- | --- | --- |
-| `scripts/source/images/hero-garden.png` (1448 × 1086) | Home page hero | `assets/images/hero/hero-garden-{640,960,1280,1448}.webp`, fallback `hero-garden-960.jpg` | “AI-generated illustrative image. Not a photo of a real job or property.” |
+| `scripts/source/images/hero-garden.png` (1448 × 1086) | Not currently used (the hero shows the step 1 enquiry form since 4 Nov 2026); files kept | `assets/images/hero/hero-garden-{640,960,1280,1448}.webp`, fallback `hero-garden-960.jpg` | “AI-generated illustrative image. Not a photo of a real job or property.” |
 | `scripts/source/images/tree-removal.png` (1448 × 1086, cropped to 3:2) | Services: Tree removal card | `assets/images/services/tree-removal-{480,800,1200}.webp`, fallback `tree-removal-800.jpg` | “AI-generated illustrative image” |
 | `scripts/source/images/tree-pruning.png` (1672 × 941, cropped to 3:2) | Services: Tree pruning card, and the social sharing image | `assets/images/services/tree-pruning-{480,800,1200}.webp`, fallback `tree-pruning-800.jpg`; `assets/images/social/sydney-tree-connect-social.jpg` (1200 × 630) | “AI-generated illustrative image” (also printed on the social image) |
 

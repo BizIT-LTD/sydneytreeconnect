@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tree Removal and Pruning Enquiries Sydney | Sydney Tree Connect</title>
-  <meta name="description" content="Send one enquiry about tree removal, pruning or stump grinding in Sydney. We pass it to a tree contractor who contacts you about an assessment, approvals and a quote.">
+  <title>Tree Removal &amp; Pruning Quotes Sydney | Sydney Tree Connect</title>
+  <meta name="description" content="Send one enquiry about tree removal, pruning or stump grinding in Sydney. We forward it to a tree contractor for review. Availability isn’t guaranteed.">
   <link rel="canonical" href="https://sydneytreeconnect.com/">
   <meta name="theme-color" content="#1f5135">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sydney Tree Connect">
   <meta property="og:locale" content="en_AU">
-  <meta property="og:title" content="Tree removal and pruning enquiries across Sydney">
-  <meta property="og:description" content="Send one enquiry and we pass it to a tree contractor who contacts you about an assessment, approvals and a quote.">
+  <meta property="og:title" content="Tree removal and pruning quotes in Sydney">
+  <meta property="og:description" content="Send one enquiry about a tree on your property. We forward it to a tree contractor for review, who may contact you to discuss the job and a quote.">
   <meta property="og:url" content="https://sydneytreeconnect.com/">
   <meta property="og:image" content="https://sydneytreeconnect.com/assets/images/social/sydney-tree-connect-social.jpg">
   <meta property="og:image:width" content="1200">
@@ -25,9 +25,9 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preload" href="/assets/fonts/figtree-latin-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/styles.css?v=3">
+  <link rel="stylesheet" href="/assets/css/styles.css?v=5">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <script src="/assets/js/main.js?v=1" defer></script>
+  <script src="/assets/js/main.js?v=3" defer></script>
 
   <script type="application/ld+json">
   {
@@ -71,7 +71,7 @@
         <ul>
           <li><a href="#services">Services</a></li>
           <li><a href="#how-it-works">How it works</a></li>
-          <li><a href="#before-removing">Before removing a tree</a></li>
+          <li><a href="/council-tree-rules/">Council rules</a></li>
           <li><a href="#faqs">FAQs</a></li>
         </ul>
       </nav>
@@ -82,27 +82,80 @@
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero__grid">
-        <div>
+        <div class="hero__intro">
           <p class="eyebrow">Sydney enquiry and referral service</p>
           <h1 id="hero-title">Tree removal and pruning enquiries across Sydney</h1>
-          <p class="hero__lead">We connect Sydney property owners with a tree contractor. Submit your details and we’ll pass your enquiry on so they can contact you about an assessment and quote.</p>
-          <div class="hero__actions">
-            <a class="button" href="#enquiry">Request a tree service quote</a>
-            <a class="button button--ghost" href="#how-it-works">How it works</a>
-          </div>
-          <ul class="hero__points">
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>One short form, with optional photos of the tree</span></li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>The contractor contacts you by email, or by phone if you choose</span></li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Council approval questions are worked through before any work is booked</span></li>
-          </ul>
+          <p class="hero__lead">Send one enquiry about a tree on your property. We forward your enquiry to a tree contractor for review. They may contact you to discuss the job and provide a quote. Availability and a response are not guaranteed.</p>
         </div>
-        <figure class="hero__media">
-          <picture>
-            <source type="image/webp" srcset="/assets/images/hero/hero-garden-640.webp 640w, /assets/images/hero/hero-garden-960.webp 960w, /assets/images/hero/hero-garden-1280.webp 1280w, /assets/images/hero/hero-garden-1448.webp 1448w" sizes="(max-width: 900px) calc(100vw - 32px), 600px">
-            <img src="/assets/images/hero/hero-garden-960.jpg" width="1448" height="1086" fetchpriority="high" decoding="async" alt="Suburban Sydney back garden with a large smooth-barked gum tree above a lawn, garden beds, a grey fence and the corner of a brick house">
-          </picture>
-          <figcaption class="media-caption">AI-generated illustrative image. Not a photo of a real job or property.</figcaption>
-        </figure>
+
+        <!-- Step 1 of the enquiry. Its fields have no name attributes and it never posts: the script copies
+             the values into the full form below (#enquiry-form), which is the only form that sends anything. -->
+        <div class="hero__form">
+          <form class="form quick-form" id="quick-form" action="#enquiry" method="get" novalidate aria-labelledby="quick-title">
+            <h2 id="quick-title">Start your enquiry</h2>
+            <p class="hint">Step 1 of 2. Nothing is sent until you submit the full form.</p>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="q-name">Name <span class="req">(required)</span></label>
+                <input type="text" id="q-name" data-field="name" autocomplete="name" maxlength="100" required aria-describedby="q-name-error">
+                <p class="error" id="q-name-error"></p>
+              </div>
+              <div class="field">
+                <label for="q-email">Email <span class="req">(required)</span></label>
+                <input type="email" id="q-email" data-field="email" autocomplete="email" maxlength="254" required aria-describedby="q-email-error">
+                <p class="error" id="q-email-error"></p>
+              </div>
+              <div class="field">
+                <label for="q-phone">Phone <span class="opt">(optional)</span></label>
+                <input type="tel" id="q-phone" data-field="phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="q-phone-error">
+                <p class="error" id="q-phone-error"></p>
+              </div>
+              <div class="field">
+                <label for="q-suburb">Suburb <span class="req">(required)</span></label>
+                <input type="text" id="q-suburb" data-field="suburb" autocomplete="address-level2" maxlength="60" required aria-describedby="q-suburb-error">
+                <p class="error" id="q-suburb-error"></p>
+              </div>
+              <div class="field">
+                <label for="q-postcode">Postcode <span class="req">(required)</span></label>
+                <input type="text" id="q-postcode" data-field="postcode" autocomplete="postal-code" inputmode="numeric" maxlength="4" required aria-describedby="q-postcode-error">
+                <p class="error" id="q-postcode-error"></p>
+              </div>
+              <div class="field full">
+                <label for="q-service">Service required <span class="req">(required)</span></label>
+                <select id="q-service" data-field="service" required aria-describedby="q-service-error">
+                  <option value="">Choose a service</option>
+                  <option value="tree-removal">Tree removal</option>
+                  <option value="tree-pruning">Tree pruning or trimming</option>
+                  <option value="stump-grinding">Stump grinding</option>
+                  <option value="not-sure">Not sure</option>
+                </select>
+                <p class="error" id="q-service-error"></p>
+              </div>
+            </div>
+            <div class="quick-form__footer">
+              <button class="button" type="submit">Continue your enquiry</button>
+              <p class="small m-0">Next: the job details, optional photos and your consent.</p>
+            </div>
+          </form>
+          <div class="form quick-form quick-fallback">
+            <h2>Start your enquiry</h2>
+            <p>Use the enquiry form further down this page. It takes a few minutes, and photos are optional.</p>
+            <a class="button" href="#enquiry">Go to the enquiry form</a>
+          </div>
+        </div>
+
+        <div class="hero__more">
+          <p class="hero__note">Sydney Tree Connect is a referral service and doesn’t carry out tree work. It’s free to enquire, photos are optional and you’re under no obligation to accept a quote.</p>
+          <ul class="hero__points">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Start with your contact details, then add the job details and any photos</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>The contractor may contact you by email, or by phone if you choose</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Not sure about council approval? You can still enquire and choose “Not sure”</span></li>
+          </ul>
+          <div class="hero__actions">
+            <a class="button button--ghost" href="#how-it-works">How it works</a>
+            <a class="button button--ghost" href="/council-tree-rules/">Check council tree rules</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -110,7 +163,7 @@
       <div class="wrap">
         <div class="section__head">
           <h2 id="services-title">Tree services you can enquire about</h2>
-          <p>Tell us what you need. The contractor reviews each enquiry and confirms whether they can help with your particular job.</p>
+          <p>Tell us what you need. The contractor reviews each enquiry, and the service pages explain what to include.</p>
         </div>
         <!-- PROVISIONAL SERVICES: confirm each service with the contractor before launch (docs/launch-checklist.md). Remove any card that is not confirmed. -->
         <div class="cards cards--media">
@@ -126,6 +179,7 @@
               <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-removal"/></svg></span>
               <h3>Tree removal</h3>
               <p>Removing a tree from a residential property, once any required council approval or exemption has been confirmed.</p>
+              <p class="card__more"><a href="/tree-removal/">Tree removal enquiries</a></p>
             </div>
           </article>
           <article class="card card--media" data-provisional-service>
@@ -140,6 +194,7 @@
               <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-pruning"/></svg></span>
               <h3>Tree pruning</h3>
               <p>Pruning or trimming branches, including jobs people often describe as tree lopping. Pruning can need council approval too.</p>
+              <p class="card__more"><a href="/tree-pruning/">Tree pruning enquiries</a></p>
             </div>
           </article>
         </div>
@@ -149,17 +204,17 @@
             <div>
               <h3>Stump grinding</h3>
               <p>Grinding down a stump left after a tree has been removed, so the area can be reused.</p>
+              <p class="card__more"><a href="/stump-grinding/">Stump grinding enquiries</a></p>
             </div>
           </article>
           <article class="card">
             <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-unsure"/></svg></span>
             <div>
               <h3>Not sure</h3>
-              <p>Describe the tree and what is worrying you. The contractor can talk through options after reviewing your enquiry.</p>
+              <p>Describe the tree and what is worrying you. If the contractor contacts you, they can talk through options.</p>
             </div>
           </article>
         </div>
-        <p class="note">Sydney Tree Connect does not carry out tree work. The contractor who contacts you is responsible for the assessment, quote and any work you agree to.</p>
       </div>
     </section>
 
@@ -177,13 +232,13 @@
           </li>
           <li>
             <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-contact"/></svg></span>
-            <h3>The contractor contacts you</h3>
-            <p>We review your enquiry and forward it to a tree contractor, who gets in touch using your preferred contact method.</p>
+            <h3>The contractor reviews it</h3>
+            <p>We forward your enquiry to a tree contractor for review. They may contact you using your preferred contact method.</p>
           </li>
           <li>
             <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-assess"/></svg></span>
             <h3>Assessment, quote and permissions</h3>
-            <p>They assess the job, explain what approvals may apply and provide a quote. Nothing is booked at this stage.</p>
+            <p>If they take on the job, they assess it, explain what approvals may apply and provide a quote. Nothing is booked at this stage.</p>
           </li>
           <li>
             <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-arrange"/></svg></span>
@@ -213,13 +268,14 @@
               <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
               <div>
                 <p><strong>A few common misunderstandings</strong></p>
-                <p>Owning the property, a tree being dead or dying, a tree seeming dangerous or a tree being a certain size does not automatically mean it can be removed. NSW rules updated in 2026 say protected dead and dying trees now need a permit or approval, and the safety-risk exemption depends on your council agreeing the tree poses an imminent risk. Street trees and other trees on public land need approval from the relevant authority. A neighbour’s tree needs your neighbour’s consent or, in a dispute, the Land and Environment Court process. Please don’t attempt to fell a tree yourself.</p>
+                <p>Owning the property, a tree being dead or dying, a tree seeming dangerous or a tree being a certain size does not automatically mean it can be removed. NSW Planning’s website, updated in October 2026, says protected dead and dying trees need a permit or approval, and that the safety-risk exemption depends on your council agreeing the tree poses an imminent risk. Some council pages still describe different exemptions, so ask your council which rule applies before any work. Street trees and other trees on public land need approval from the relevant authority. A neighbour’s tree needs your neighbour’s consent or, in a dispute, the Land and Environment Court process. Please don’t attempt to fell a tree yourself.</p>
               </div>
             </div>
           </div>
           <div class="panel">
             <h3 id="sources-title">Official information</h3>
             <ul class="link-list">
+              <li><a href="/council-tree-rules/">Council tree rules guides</a><span>Our summaries for Ku-ring-gai, Hornsby and Northern Beaches, with official links and review dates.</span></li>
               <li><a href="https://www.olg.nsw.gov.au/public/find-your-local-council" rel="noopener" target="_blank">Find your local council</a><span>Office of Local Government. Use this if you’re not sure which council covers your property.</span></li>
               <li><a href="https://www.service.nsw.gov.au/referral/removing-trees-on-your-property" rel="noopener" target="_blank">Removing trees on your property</a><span>Service NSW</span></li>
               <li><a href="https://www.planning.nsw.gov.au/the-planning-system/environment-and-heritage/protecting-our-urban-trees-and-vegetation" rel="noopener" target="_blank">Protecting our urban trees and vegetation</a><span>NSW Department of Planning, Housing and Infrastructure</span></li>
@@ -238,7 +294,7 @@
       <div class="wrap coverage">
         <div>
           <h2 id="coverage-title">Enquiries from across Sydney</h2>
-          <p>You can send an enquiry from anywhere in the Sydney area. Whether the contractor can take on a job in your suburb is confirmed once they have reviewed your enquiry.</p>
+          <p>You can send an enquiry from anywhere in the Sydney area. We forward your enquiry to a tree contractor for review. Availability in your suburb, and a response, are not guaranteed.</p>
           <p>Sydney Tree Connect is an online referral service. We don’t have offices or staff in local suburbs.</p>
         </div>
         <!-- COVERAGE: add confirmed service regions here only after the contractor confirms them in writing. Example:
@@ -265,11 +321,11 @@
           </details>
           <details>
             <summary>Who will contact me, and how?</summary>
-            <div><p>The tree contractor we pass your enquiry to will contact you. They will use your preferred contact method. If you choose phone, you need to include your phone number so they can call you. Enquiries are forwarded manually, so it isn’t instant.</p></div>
+            <div><p>We forward your enquiry to a tree contractor for review. They may contact you to discuss the job and provide a quote. Availability and a response are not guaranteed. If they contact you, they use your preferred contact method. If you choose phone, include your phone number so they can call you. Enquiries are forwarded manually, so it isn’t instant.</p></div>
           </details>
           <details>
             <summary>Do I need to send photos?</summary>
-            <div><p>No, photos are optional. A few clear photos of the whole tree, the area around it and any damaged branches can help the contractor understand the job before they contact you. You can attach up to 5 photos. Please don’t include photos of people.</p></div>
+            <div><p>No, photos are optional. A few clear photos of the whole tree, the area around it and any damaged branches can help the contractor understand the job when they review your enquiry. You can attach up to 5 photos. Please don’t include photos of people.</p></div>
           </details>
           <details>
             <summary>I’m not sure whether I need council approval. Can I still enquire?</summary>
@@ -278,6 +334,10 @@
           <details>
             <summary>What if I don’t own the property?</summary>
             <div><p>You can still ask for general guidance, for example if you are a tenant or a neighbour. Work can only go ahead with the authority of the property owner and any required approvals. Trees on a neighbour’s land or on the street need the neighbour’s consent or approval from the relevant authority.</p></div>
+          </details>
+          <details>
+            <summary>How much does tree removal cost?</summary>
+            <div><p>It depends on the tree’s size, access, what is nearby, its condition, green waste, the stump and any council requirements. The contractor provides a quote after assessing the job. Our <a href="/tree-removal-cost/">tree removal cost guide</a> explains the main factors and how to compare quotes.</p></div>
           </details>
           <details>
             <summary>Who does the work, and who do I pay?</summary>
@@ -295,11 +355,41 @@
       </div>
     </section>
 
-    <section class="section" id="enquiry" aria-labelledby="enquiry-title">
+    <section class="section" id="prepare" aria-labelledby="prepare-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="prepare-title">Before you send your enquiry</h2>
+          <p>A few clear details help the contractor understand the job when they review your enquiry.</p>
+        </div>
+        <div class="prepare">
+          <div class="panel">
+            <h3>Photos that help</h3>
+            <ul>
+              <li>The whole tree, from far enough back to see its full height</li>
+              <li>The base of the trunk and what is around the tree, such as the house, fences or power lines</li>
+              <li>The access path from the street, including gates and steps</li>
+              <li>Any damage you’re worried about, such as split or dead branches</li>
+            </ul>
+            <p class="small m-b0">Up to 5 photos, each up to 4 MB. Large photos are resized in your browser before sending, which also removes most location data. Please don’t include photos of people.</p>
+          </div>
+          <div class="panel">
+            <h3>What happens after you send it</h3>
+            <ul>
+              <li>We forward your enquiry, with your photos, to a tree contractor for review. This is done manually, so it isn’t instant.</li>
+              <li>They may contact you to discuss the job and provide a quote, by email, or by phone if you choose phone and include your number.</li>
+              <li>If you get a quote, you decide whether to go ahead.</li>
+            </ul>
+            <p class="small m-b0">If you choose email, check your junk or spam folder for any reply.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tint" id="enquiry" aria-labelledby="enquiry-title">
       <div class="wrap">
         <div class="section__head">
           <h2 id="enquiry-title">Request a tree service quote</h2>
-          <p>Fill in the form and we’ll pass your enquiry to a tree contractor. Fields marked “required” must be completed.</p>
+          <p>Fill in the form and we’ll forward your enquiry to a tree contractor for review. Fields marked “required” must be completed.</p>
         </div>
         <div class="enquiry">
           <div class="disclosure">
@@ -307,9 +397,8 @@
             <ul>
               <li>We connect Sydney property owners with a tree contractor. We don’t carry out tree work ourselves.</li>
               <li>Your enquiry is sent to us by email. We review it and forward your details and any photos to the contractor.</li>
-              <li>The contractor contacts you, assesses the job, checks required permissions and provides a quote.</li>
+              <li>The contractor may contact you to discuss the job, check required permissions and provide a quote. Availability and a response are not guaranteed.</li>
               <li>Any work, timing and payment are arranged directly between you and the contractor.</li>
-              <li>This form is not monitored for emergencies. In an emergency call 000.</li>
             </ul>
             <p class="mt-16 m-b0">Read our <a href="/privacy.html">privacy notice</a> and <a href="/terms.html">referral terms</a>.</p>
           </div>
@@ -334,22 +423,6 @@
               </div>
 
               <div class="field">
-                <label for="phone">Phone <span class="opt">(optional)</span></label>
-                <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="phone-hint phone-error">
-                <p class="hint" id="phone-hint">If you provide a number, the contractor may call you about your enquiry.</p>
-                <p class="error" id="phone-error" data-error-for="phone"></p>
-              </div>
-
-              <fieldset class="field" id="contact_method" aria-describedby="contact_method-error">
-                <legend>Preferred contact method <span class="req">(required)</span></legend>
-                <div class="choices choices--inline">
-                  <label class="choice"><input type="radio" name="contact_method" value="email" checked><span>Email</span></label>
-                  <label class="choice"><input type="radio" name="contact_method" value="phone"><span>Phone</span></label>
-                </div>
-                <p class="error" id="contact_method-error" data-error-for="contact_method"></p>
-              </fieldset>
-
-              <div class="field">
                 <label for="suburb">Suburb <span class="req">(required)</span></label>
                 <input type="text" id="suburb" name="suburb" autocomplete="address-level2" maxlength="60" required aria-describedby="suburb-error">
                 <p class="error" id="suburb-error" data-error-for="suburb"></p>
@@ -372,6 +445,24 @@
                 </select>
                 <p class="error" id="service-error" data-error-for="service"></p>
               </div>
+
+              <p class="full form-note" id="quick-note" role="status"></p>
+
+              <div class="field">
+                <label for="phone">Phone <span class="opt">(optional)</span></label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="phone-hint phone-error">
+                <p class="hint" id="phone-hint">If you provide a number, the contractor may call you about your enquiry.</p>
+                <p class="error" id="phone-error" data-error-for="phone"></p>
+              </div>
+
+              <fieldset class="field" id="contact_method" aria-describedby="contact_method-error">
+                <legend>Preferred contact method <span class="req">(required)</span></legend>
+                <div class="choices choices--inline">
+                  <label class="choice"><input type="radio" name="contact_method" value="email" checked><span>Email</span></label>
+                  <label class="choice"><input type="radio" name="contact_method" value="phone"><span>Phone</span></label>
+                </div>
+                <p class="error" id="contact_method-error" data-error-for="contact_method"></p>
+              </fieldset>
 
               <div class="field full">
                 <label for="description">Job description <span class="req">(required)</span></label>
@@ -446,17 +537,27 @@
           <p>An enquiry and referral website. We pass enquiries to a tree contractor and do not carry out tree work.</p>
         </div>
         <div>
-          <h2>Information</h2>
+          <h2>Services</h2>
           <ul>
-            <li><a href="/privacy.html">Privacy notice</a></li>
-            <li><a href="/terms.html">Referral terms</a></li>
+            <li><a href="/tree-removal/">Tree removal</a></li>
+            <li><a href="/tree-pruning/">Tree pruning</a></li>
+            <li><a href="/stump-grinding/">Stump grinding</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Guides</h2>
+          <ul>
+            <li><a href="/council-tree-rules/">Council tree rules</a></li>
+            <li><a href="/tree-removal-cost/">Tree removal costs</a></li>
             <li><a href="/#before-removing">Before removing a tree</a></li>
           </ul>
         </div>
         <div>
-          <h2>Contact</h2>
+          <h2>Information</h2>
           <ul>
             <li><a href="/#enquiry">Send an enquiry</a></li>
+            <li><a href="/privacy.html">Privacy notice</a></li>
+            <li><a href="/terms.html">Referral terms</a></li>
             <li>Privacy questions: <a href="mailto:sydneytree278@gmail.com">sydneytree278@gmail.com</a></li>
           </ul>
         </div>

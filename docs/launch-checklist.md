@@ -18,7 +18,7 @@ Work through this list in order. `node scripts/prelaunch-check.mjs` checks the f
 - [x] Contact email for terms.html: sydneytree278@gmail.com (owner, 4 Nov 2026).
 - [ ] Business-name and trade mark checks for “Sydney Tree Connect”. Owning the domain doesn't confirm these.
 - [ ] **Owner-managed:** contractor selection, identity and written agreement to receive enquiries. Record how they will handle and delete customer data. terms.html says only that enquiries go “to a tree contractor”; if you want to name the contractor or describe the arrangement, add it to “What Sydney Tree Connect is” in terms.html.
-- [ ] Services the contractor confirms. Remove any unconfirmed card in the Services section of index.html, and the matching option in the form `<select>` and in `STC_SERVICES` in api/enquiry.php. Then delete the `data-provisional-service` attributes and the PROVISIONAL SERVICES comment.
+- [ ] Services the contractor confirms. For each unconfirmed service, delete its page (`/tree-removal/`, `/tree-pruning/` or `/stump-grinding/`), its sitemap.xml entry and links to it (home service card, footers, related links). Remove any unconfirmed card in the Services section of index.html, and the matching option in the form `<select>` and in `STC_SERVICES` in api/enquiry.php. Then delete the `data-provisional-service` attributes and the PROVISIONAL SERVICES comment.
 - [ ] Coverage. Add regions only after the contractor confirms them in writing, using the commented COVERAGE template in index.html.
 - [ ] Forwarding or response time (optional). Public wording makes no promise: the home FAQ and thank-you page say forwarding is manual and not instant, and terms.html says “We can’t promise that the contractor will contact you within a particular time”. If you commit to a time, add it to those three places.
 - [x] Two-factor authentication on the enquiry Gmail account (confirmed by the owner, 4 Nov 2026; stated in privacy.html).
@@ -62,7 +62,7 @@ Work through this list in order. `node scripts/prelaunch-check.mjs` checks the f
 
 ## 4. Indexing
 
-- [x] **Home page made indexable (owner decision, 4 Nov 2026).** Its `STAGING-NOINDEX` lines are removed. No `X-Robots-Tag` header is sent for pages (only `/api/enquiry.php` sends one). sitemap.xml lists only `/`.
+- [x] **Home page made indexable (owner decision, 4 Nov 2026).** Its `STAGING-NOINDEX` lines are removed. No `X-Robots-Tag` header is sent for pages (only `/api/enquiry.php` sends one). sitemap.xml lists only indexable pages: `/`, the three service pages, `/tree-removal-cost/` and the four `/council-tree-rules/` pages (added 4 Nov 2026).
 - [x] robots.txt disallows only `/api/`. `Disallow: /thank-you.html` was removed so crawlers can read the noindex tags on thank-you.html, 404.html, privacy.html and terms.html.
 - [ ] **Check that real Googlebot can fetch the site.** Hostinger's server returns 403 to requests that only claim to be Googlebot or Bingbot (fake-crawler protection; tested 4 Nov 2026 from a non-Google IP, normal browsers get 200). Genuine Google crawlers should pass, but confirm it with Search Console URL Inspection > “Test live URL” on the home page. If that shows 403 or “Blocked”, ask Hostinger support to allow verified search engine crawlers.
 - [ ] privacy.html and terms.html: keep `noindex, nofollow` until section 1 is resolved and the pages are approved. Then remove their `STAGING-NOINDEX` comment and meta tag and add both URLs to sitemap.xml.
@@ -80,6 +80,6 @@ Work through this list in order. `node scripts/prelaunch-check.mjs` checks the f
 ## 6. After launch
 
 - [ ] Delete enquiry emails according to the stated retention period.
-- [ ] Re-check the official tree guidance at least every 6 months and update docs/content-sources.md.
+- [ ] Re-check the official tree guidance at least every 6 months, including the three council guides and the cost guide's council fee example. Update each page's “Last reviewed” date, the sitemap `<lastmod>` and docs/content-sources.md.
 - [ ] Add real project examples only with the customer's and contractor's permission. Never use AI or stock images as evidence of work.
 - [ ] Plan any new service or location pages around genuinely useful, original content and confirmed coverage. Avoid near-identical suburb pages.

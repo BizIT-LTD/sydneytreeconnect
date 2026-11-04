@@ -9,9 +9,13 @@ The site does **not** carry out tree work and displays **no business phone numbe
 ## What's here
 
 ```
-index.html            Home: hero, services, how it works, guidance, coverage, FAQs, enquiry form
-privacy.html          Draft privacy notice (owner placeholders highlighted)
-terms.html            Draft referral terms (owner placeholders highlighted)
+index.html            Home: hero with step 1 enquiry form, services, how it works, guidance, coverage, FAQs, enquiry form
+tree-removal/, tree-pruning/, stump-grinding/
+                      Service enquiry pages (provisional until the contractor confirms each service)
+tree-removal-cost/    Cost factors guide (no price ranges; official council fee example only)
+council-tree-rules/   Council rules hub, plus ku-ring-gai/, hornsby/ and northern-beaches/ guides
+privacy.html          Draft privacy notice (draft banner, noindex until approved)
+terms.html            Draft referral terms (draft banner, noindex until approved)
 thank-you.html        Shown only after the handler accepts an enquiry (noindex)
 404.html              Helpful not-found page (noindex)
 api/enquiry.php       Form handler: validation, spam checks, rate limit, email via SMTP
@@ -54,7 +58,7 @@ There's no build step and no framework. Pages are plain HTML. Header and footer 
 
 The symbol is a single leaf whose veins end in small nodes, a quiet “connection” idea. It was checked at 16 px on light and dark tabs and at the mobile header size (144 × 25 px). To regenerate after a change, run `python scripts/build-brand.py`, then `node scripts/render-brand-png.cjs` (needs `npm i puppeteer-core` and Chrome or Edge).
 
-**Imagery:** the hero and the Tree removal and Tree pruning cards use owner-supplied images. Their C2PA credentials show they were made with ChatGPT image generation, so each one is captioned “AI-generated illustrative image”. The originals, with credentials intact, are in `scripts/source/images/`, which isn't served. `python scripts/build-images.py` rebuilds the WebP files (with JPEG fallbacks) and the social image. See [docs/image-prompts.md](docs/image-prompts.md).
+**Imagery:** the Tree removal and Tree pruning cards (and their service pages) use owner-supplied images. Their C2PA credentials show they were made with ChatGPT image generation, so each one is captioned “AI-generated illustrative image”. The originals, with credentials intact, are in `scripts/source/images/`, which isn't served. `python scripts/build-images.py` rebuilds the WebP files (with JPEG fallbacks) and the social image. See [docs/image-prompts.md](docs/image-prompts.md). The home page hero no longer shows an image; it has the step 1 enquiry form instead.
 
 ## Local preview
 
@@ -168,7 +172,7 @@ Never paste the App Password into chat, email, a ticket or any file inside the p
 
 - All canonical URLs, Open Graph URLs, structured data and the sitemap use `https://sydneytreeconnect.com`.
 - Structured data describes a WebSite only (no Organization, address, phone, rating or arborist claims).
-- **Indexing (4 Nov 2026):** the home page is indexable and is the only URL in sitemap.xml. privacy.html and terms.html keep a `STAGING-NOINDEX` robots meta tag until they are approved. thank-you.html and 404.html are always noindex. robots.txt blocks only `/api/`, so crawlers can read those noindex tags.
+- **Indexing (4 Nov 2026):** the home page, the three service pages, the cost guide and the four council rules pages are indexable and listed in sitemap.xml. privacy.html and terms.html keep a `STAGING-NOINDEX` robots meta tag until they are approved. thank-you.html and 404.html are always noindex. robots.txt blocks only `/api/`, so crawlers can read those noindex tags.
 - After launch: add a Domain property in Google Search Console, verify it by DNS, submit `/sitemap.xml`, and request indexing of the home page with URL Inspection. Requesting indexing doesn't guarantee indexing or rankings, and first-page ranking is a goal, not a promise.
 - Future pages: write genuinely useful service or guidance pages, and location pages only for confirmed coverage with original content. Don't create many near-identical suburb pages.
 

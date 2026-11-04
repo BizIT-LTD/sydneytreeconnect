@@ -44,6 +44,63 @@
 
   started.value = String(Date.now());
 
+  // Service page links such as /?service=tree-removal#enquiry preselect the service
+  var wantedService = (location.search.match(/[?&]service=([a-z-]+)/) || [])[1];
+  var serviceSelect = document.getElementById("service");
+  if (wantedService && serviceSelect.querySelector('option[value="' + wantedService + '"]')) {
+    serviceSelect.value = wantedService;
+  }
+
+  // Hero form (step 1). It never sends anything: values are copied into the full form as they
+  // are typed, checked with the same rules on Continue, and the visitor moves on to the rest.
+  var quick = document.getElementById("quick-form");
+  if (quick) {
+    var quickNote = document.getElementById("quick-note");
+    var QUICK_FIELDS = ["name", "email", "phone", "suburb", "postcode", "service"];
+    var quickInput = function (k) { return document.getElementById("q-" + k); };
+    var copyField = function (k) { form.elements[k].value = quickInput(k).value; };
+
+    if (serviceSelect.value) quickInput("service").value = serviceSelect.value;
+
+    var showQuickErrors = function (errors, only) {
+      var first = null;
+      QUICK_FIELDS.forEach(function (k) {
+        if (only && k !== only) return;
+        var input = quickInput(k);
+        document.getElementById("q-" + k + "-error").textContent = errors[k] || "";
+        if (errors[k]) {
+          input.setAttribute("aria-invalid", "true");
+          first = first || input;
+        } else input.removeAttribute("aria-invalid");
+      });
+      return first;
+    };
+
+    var onQuickEdit = function (e) {
+      var k = e.target.getAttribute("data-field");
+      if (!k) return;
+      copyField(k);
+      // Once a field has been flagged, re-check it as the visitor corrects it
+      if (e.target.getAttribute("aria-invalid") === "true") showQuickErrors(detailErrors(), k);
+    };
+    quick.addEventListener("input", onQuickEdit);
+    quick.addEventListener("change", onQuickEdit);
+
+    quick.addEventListener("submit", function (e) {
+      e.preventDefault();
+      QUICK_FIELDS.forEach(copyField);
+      var first = showQuickErrors(detailErrors());
+      if (first) {
+        first.focus();
+        return;
+      }
+      quickNote.textContent = "Thanks. Your details are filled in above. Answer the remaining questions below, then send your enquiry.";
+      quickNote.scrollIntoView({ block: "start" });
+      var method = form.querySelector('input[name="contact_method"]:checked') || form.querySelector('input[name="contact_method"]');
+      method.focus({ preventScroll: true });
+    });
+  }
+
   var labels = {
     name: "Name",
     email: "Email",
@@ -75,12 +132,12 @@
     return v.replace(/\D/g, "");
   }
 
-  function validate() {
+  // The details the hero form collects. Shared by both forms so the rules stay identical.
+  function detailErrors() {
     var errors = {};
     var name = value("name");
     var email = value("email");
     var phone = value("phone");
-    var method = radioValue("contact_method");
 
     if (!name) errors.name = "Enter your name.";
     else if (name.length > 100) errors.name = "Name must be 100 characters or fewer.";
@@ -92,15 +149,23 @@
     if (phone && (!/^[0-9+()\-\s]{8,20}$/.test(phone) || phoneDigits(phone).length < 8 || phoneDigits(phone).length > 15))
       errors.phone = "Enter a valid phone number, like 0400 000 000.";
 
-    if (method !== "email" && method !== "phone") errors.contact_method = "Choose email or phone.";
-    else if (method === "phone" && !phone && !errors.phone)
-      errors.phone = "Enter a phone number, or choose email as your preferred contact method.";
-
     if (!value("suburb")) errors.suburb = "Enter your suburb.";
     if (!value("postcode")) errors.postcode = "Enter your postcode.";
     else if (!/^2\d{3}$/.test(value("postcode"))) errors.postcode = "Enter a 4-digit NSW postcode, like 2000.";
 
     if (!value("service")) errors.service = "Choose the service you need, or Not sure.";
+
+    return errors;
+  }
+
+  function validate() {
+    var errors = detailErrors();
+    var phone = value("phone");
+    var method = radioValue("contact_method");
+
+    if (method !== "email" && method !== "phone") errors.contact_method = "Choose email or phone.";
+    else if (method === "phone" && !phone && !errors.phone)
+      errors.phone = "Enter a phone number, or choose email as your preferred contact method.";
 
     var desc = value("description");
     if (!desc) errors.description = "Describe the job.";

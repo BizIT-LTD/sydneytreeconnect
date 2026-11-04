@@ -8,7 +8,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const pages = ["index.html", "privacy.html", "terms.html", "thank-you.html", "404.html"];
+const pages = ["index.html", "privacy.html", "terms.html", "thank-you.html", "404.html", "tree-removal/index.html", "tree-pruning/index.html", "stump-grinding/index.html", "tree-removal-cost/index.html", "council-tree-rules/index.html", "council-tree-rules/ku-ring-gai/index.html", "council-tree-rules/hornsby/index.html", "council-tree-rules/northern-beaches/index.html"];
 const blockers = [];
 const warnings = [];
 const ok = [];
@@ -23,8 +23,10 @@ for (const p of pages) {
   if (/draft-banner/.test(html)) blockers.push(`${p}: draft banner still present (remove after owner/legal review)`);
   if (/href="tel:/i.test(html)) blockers.push(`${p}: contains a tel: link (no business phone number allowed)`);
   if (/example\.(com|test)|localhost|127\.0\.0\.1/.test(html)) blockers.push(`${p}: contains a placeholder or local domain`);
-  if (p === "index.html" && /data-provisional-service/.test(html)) {
-    warnings.push("index.html: service cards are marked provisional. Confirm each with the contractor, then remove the data-provisional-service attribute (and any unconfirmed card).");
+  if (/data-provisional-service/.test(html)) {
+    warnings.push(p === "index.html"
+      ? "index.html: service cards are marked provisional. Confirm each with the contractor, then remove the data-provisional-service attribute (and any unconfirmed card)."
+      : `${p}: provisional service page. Confirm the service with the contractor, or delete the page, its sitemap entry and links to it.`);
   }
   if (["thank-you.html", "404.html"].includes(p) && !/name="robots" content="noindex/.test(html)) blockers.push(`${p}: must stay noindex`);
 }
@@ -44,7 +46,7 @@ else ok.push(`sitemap.xml lists ${locs.length} canonical pages`);
 if (!/Sitemap: https:\/\/sydneytreeconnect\.com\/sitemap\.xml/.test(read("robots.txt"))) blockers.push("robots.txt: missing production sitemap line");
 
 // Indexing consistency: sitemap URLs must be indexable, and noindex pages must stay crawlable.
-const fileFor = (loc) => { const p = new URL(loc).pathname; return p === "/" ? "index.html" : p.slice(1); };
+const fileFor = (loc) => { const p = new URL(loc).pathname; return p.endsWith("/") ? p.slice(1) + "index.html" : p.slice(1); };
 const noindex = (f) => /<meta name="robots" content="[^"]*noindex/i.test(read(f));
 const listedNoindex = locs.filter((l) => fs.existsSync(path.join(root, fileFor(l))) && noindex(fileFor(l)));
 if (listedNoindex.length) blockers.push(`sitemap.xml lists noindex page(s): ${listedNoindex.join(", ")}`);

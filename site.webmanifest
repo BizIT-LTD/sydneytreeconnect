@@ -1,6 +1,7 @@
 {
   "name": "Sydney Tree Connect",
   "short_name": "Tree Connect",
+  "lang": "en-AU",
   "start_url": "/",
   "display": "browser",
   "background_color": "#faf7f0",
