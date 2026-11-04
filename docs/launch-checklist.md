@@ -2,24 +2,38 @@
 
 Last updated: 4 November 2026. The site is live at https://sydneytreeconnect.com (still noindex) and the repository is at https://github.com/BizIT-LTD/sydneytreeconnect (branch `main`).
 
+The public pages have no placeholders (removed 4 Nov 2026). Unresolved decisions are tracked only here, and the public wording was written to stay accurate without them. Don't publish anything below until the owner has confirmed it. `node scripts/prelaunch-check.mjs` reports every unticked item in section 1 as a blocker.
+
 Work through this list in order. `node scripts/prelaunch-check.mjs` checks the file-based items and exits with an error while any blocker remains.
 
 ## 1. Owner information (launch blockers)
 
-- [ ] Operator legal or trading name. Still a placeholder in privacy.html and terms.html (“About us”). The footer line was removed on 4 Nov 2026 until it is supplied. When it is, add back to the first footer column of all five pages, after the description paragraph: `<p>Operated by NAME, ABN 00 000 000 000.</p>`. Don't use the brand “Sydney Tree Connect” as the legal operator.
-- [ ] ABN, if applicable. Placeholder in privacy.html and terms.html, and not shown in the footer. If there is no ABN, delete the “, ABN …” text and leave it out of the footer line.
+- [x] Operator (owner, 4 Nov 2026): the website is run personally by an individual with no ABN, whose name is not published. “Sydney Tree Connect” is used only as the website's name, never as a company or registered business. privacy.html and terms.html say “run by an individual … the name of the website, not a company”. The footer has no “Operated by” line, and the home page structured data is a `WebSite` only, with no `Organization` or publisher.
+- [x] ABN: none (owner, 4 Nov 2026). All ABN placeholders removed.
+- [ ] **Review operator identification before launch** (internal only; the public wording is “run by an individual … the name of the website, not a company”, with no name or ABN). Points to check, ideally with advice:
+  - Business name: in Australia, carrying on a business under a name other than your own usually requires registering that business name with ASIC, which needs an ABN. Check whether receiving referral fees or other benefits means you are carrying on a business under “Sydney Tree Connect”.
+  - Privacy notice and terms: whether an unnamed individual with only an email contact is enough for customers to know who holds their information and who the terms are with.
+  - Update the wording in privacy.html and terms.html only if the review requires it.
 - [x] Privacy contact email: sydneytree278@gmail.com (owner, 4 Nov 2026), linked in privacy.html and in every page footer.
-- [ ] General contact email for terms.html (“Questions about these terms”). Still a placeholder: the privacy address, or another one.
+- [x] Contact email for terms.html: sydneytree278@gmail.com (owner, 4 Nov 2026).
 - [ ] Business-name and trade mark checks for “Sydney Tree Connect”. Owning the domain doesn't confirm these.
-- [ ] Contractor identity and written agreement to receive enquiries. Record how they will handle and delete customer data.
+- [ ] **Owner-managed:** contractor selection, identity and written agreement to receive enquiries. Record how they will handle and delete customer data. terms.html says only that enquiries go “to a tree contractor”; if you want to name the contractor or describe the arrangement, add it to “What Sydney Tree Connect is” in terms.html.
 - [ ] Services the contractor confirms. Remove any unconfirmed card in the Services section of index.html, and the matching option in the form `<select>` and in `STC_SERVICES` in api/enquiry.php. Then delete the `data-provisional-service` attributes and the PROVISIONAL SERVICES comment.
 - [ ] Coverage. Add regions only after the contractor confirms them in writing, using the commented COVERAGE template in index.html.
-- [ ] Typical forwarding or response time. The placeholders were removed from the home page FAQ and the thank-you page on 4 Nov 2026; both still say forwarding is manual and not instant. If you commit to a time, add it there and in terms.html, where the response-time placeholder remains.
+- [ ] Forwarding or response time (optional). Public wording makes no promise: the home FAQ and thank-you page say forwarding is manual and not instant, and terms.html says “We can’t promise that the contractor will contact you within a particular time”. If you commit to a time, add it to those three places.
 - [x] Two-factor authentication on the enquiry Gmail account (confirmed by the owner, 4 Nov 2026; stated in privacy.html).
-- [ ] Retention period for enquiry emails, who has inbox access, overseas storage by providers, and how deletion requests are handled (privacy.html).
-- [ ] Referral fee or other benefit from the contractor. Disclose it plainly in terms.html, or state that there is none.
+- [ ] Privacy decisions (privacy.html). Current public wording, written to be accurate without a decision, is quoted after each item:
+  - Retention period for enquiry emails. Public: “stay in our email account until we delete them. You can ask us to delete yours at any time”. Add a period when you choose one, for example “for 12 months and then delete them”.
+  - Who can access the enquiry inbox. Public: nothing beyond the password and two-factor authentication. Add “only the operator can read enquiries” if that's true and stays true.
+  - Overseas storage. Public: “Hostinger and Google may store or process this information on servers outside Australia.” Confirm the Hostinger data centre for this plan (hPanel) and add countries where practicable.
+  - Deletion requests already forwarded. Public: “we will tell you. Deleting our copy does not delete the contractor’s copy, so you can also ask the contractor directly.” Decide whether you will pass deletion requests on to the contractor yourself, and agree it with them.
+  - Complaint response time. Public: “contact us first at sydneytree278@gmail.com”, with no time stated. Add a period (for example 30 days) if you will commit to one.
+  - Contractor named in the privacy notice. Public: “the tree contractor we pass enquiries to”. Name them once the agreement is in place, if they agree.
+- [ ] **Owner-managed, resolve before relying on the terms:** referral fee or other benefit from the contractor. The “Fees” section of terms.html now says only that enquiries are free and customers aren't charged. It is silent on any payment from the contractor. If you receive, or expect to receive, any fee or benefit, add a plain disclosure there, for example “We receive a fee from the contractor for each enquiry we pass on.” (only if accurate). If you receive nothing, you may say so.
 - [ ] Any qualification or insurance claim you want to add. Verify it first and record the evidence in docs/content-sources.md. None are currently made.
-- [ ] Final privacy notice and referral terms approval. Consider a legal review, then remove the yellow draft banners.
+- [ ] Liability wording (terms.html, optional, after legal advice). Public: only the Australian Consumer Law sentence, which stays whatever is added.
+- [ ] Publication date. Both pages show “Last updated: 4 November 2026”, the date the draft wording was last changed. Update it whenever the wording changes, and set it to the date of the approved version.
+- [ ] Final privacy notice and referral terms approval. Consider a legal review, then remove the draft banners (“has not been legally reviewed and may change before it is finalised”).
 
 ## 2. Form delivery (live and verified, 4 Nov 2026)
 

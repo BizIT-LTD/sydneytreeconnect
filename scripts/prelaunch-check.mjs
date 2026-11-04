@@ -29,6 +29,12 @@ for (const p of pages) {
   if (["thank-you.html", "404.html"].includes(p) && !/name="robots" content="noindex/.test(html)) blockers.push(`${p}: must stay noindex`);
 }
 
+// Owner decisions now live only in the checklist, so unticked items in section 1 are blockers.
+const owner = (read("docs/launch-checklist.md").split(/^## 1\./m)[1] || "").split(/^## /m)[0];
+const openItems = [...owner.matchAll(/^- \[ \] (.+)$/gm)].map((m) => m[1].replace(/\*\*/g, "").replace(/^Owner-managed[^:]*:\s*/, "").split(/[.(:]/)[0].trim());
+if (openItems.length) blockers.push(`docs/launch-checklist.md: ${openItems.length} open owner decision(s): ${openItems.join("; ")}`);
+else ok.push("All owner decisions in the launch checklist are ticked");
+
 const sitemap = read("sitemap.xml");
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 if (locs.some((l) => !l.startsWith("https://sydneytreeconnect.com/"))) blockers.push("sitemap.xml: contains a URL outside https://sydneytreeconnect.com/");
