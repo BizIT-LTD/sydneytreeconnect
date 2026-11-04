@@ -106,7 +106,7 @@ The pages will work, but **the form cannot send email** because these hosts can'
 
 The handler emails each enquiry, with photos as attachments, to the **owner's inbox**, never directly to the contractor. It uses authenticated SMTP through the vendored PHPMailer.
 
-**Confirmed setup (owner, 4 Nov 2026):** one Gmail account both sends and receives enquiries, through Gmail SMTP with a Google App Password. The settings, including the App Password, are in `private/stc-enquiry.env` inside the project folder. That folder is **git-ignored** (never committed), returns 404 over the web (`.htaccess`), and is only read when running PHP's local dev server. On the live host the handler reads only `domains/sydneytreeconnect.com/private/stc-enquiry.env`, outside `public_html`. **Never upload the project's `private/` folder into `public_html`.** If you deploy by File Manager or FTP rather than Git, skip it, along with `docs/`, `scripts/` and `tests/`. The live copy keeps `ENQUIRY_ENABLED=false` until real delivery has been confirmed.
+**Confirmed setup (owner, 4 Nov 2026):** one Gmail account both sends and receives enquiries, through Gmail SMTP with a Google App Password. The settings, including the App Password, are in `private/stc-enquiry.env` inside the project folder. That folder is **git-ignored** (never committed), returns 404 over the web (`.htaccess`), and is only read when running PHP's local dev server. On the live host the handler reads only `domains/sydneytreeconnect.com/private/stc-enquiry.env`, outside `public_html`. **Never upload the project's `private/` folder into `public_html`.** If you deploy by File Manager or FTP rather than Git, skip it, along with `docs/`, `scripts/` and `tests/`. A ready-to-upload production copy is in `private/production/stc-enquiry.env` (also git-ignored): the same App Password, production origins only, its own rate-limit secret and `ENQUIRY_ENABLED=true`. Set it to `false` on the server to switch the form off.
 
 Settings in the private file:
 
@@ -116,7 +116,7 @@ Settings in the private file:
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | `smtp.gmail.com` / `465` / `ssl`. Fallback if port 465 is blocked: `587` / `tls`. |
 | `SMTP_PASS` | The 16-letter Google App Password, **not** the normal Gmail password. It's fine to paste it with or without the spaces Google shows. |
 | `RATE_LIMIT_SECRET` | Already generated (random, private). |
-| `ENQUIRY_ENABLED` | `false` until a real test enquiry has arrived, then `true`. |
+| `ENQUIRY_ENABLED` | `true` on the live server (delivery verified 4 Nov 2026). Set `false` to switch the form off. |
 
 ### Gmail SMTP setup, step by step
 
@@ -125,13 +125,10 @@ Never paste the App Password into chat, email, a ticket or any file inside the p
 1. **Turn on 2-Step Verification** for the Gmail account: Google Account > Security > 2-Step Verification. App Passwords aren't offered without it.
 2. **Create an App Password:** go to https://myaccount.google.com/apppasswords while signed in to the Gmail account, name it “Sydney Tree Connect website”, and select Create. Google shows a 16-letter password once. Keep the window open for step 4. If the page says the setting isn't available, check that 2-Step Verification is on, and note that Advanced Protection accounts can't use App Passwords.
 3. **Create the private folder** in hPanel > File Manager, next to (not inside) `public_html`: `domains/sydneytreeconnect.com/private/`.
-4. **Upload** a copy of `private/stc-enquiry.env` into that folder (hPanel File Manager > Upload). In the server copy:
-   - Remove the two local `http://` origins from `ALLOWED_ORIGINS`.
-   - Set `ENQUIRY_ENABLED=false` for now.
-   - Check `SMTP_PASS` holds the App Password. If you create a new App Password, paste it there in the File Manager editor, never in chat.
+4. **Upload** `private/production/stc-enquiry.env` from the project into that folder (hPanel File Manager > Upload). Keep the name `stc-enquiry.env`. Don't upload the local `private/stc-enquiry.env`: it allows local origins. If you ever create a new App Password, paste it into `SMTP_PASS` in the File Manager editor, never in chat.
 5. **Set permissions** on the file to `600` (File Manager > Permissions).
 6. **Check the PHP settings** in hPanel > Advanced > PHP Configuration: PHP 8.1 or newer, `upload_max_filesize` ≥ 8M, `post_max_size` ≥ 20M, `max_file_uploads` ≥ 5, `display_errors` Off.
-7. **Switch on for testing:** change `ENQUIRY_ENABLED=false` to `true` and save. Send dummy enquiries from the live site: one with no photos, one with 5 photos, and one preferring phone.
+7. **Test:** the production copy is already `ENQUIRY_ENABLED=true`. Send dummy enquiries from the live site: one with no photos, one with 5 photos, and one preferring phone.
 8. **Check Gmail.** Each enquiry should show the subject “Tree enquiry STC-…”, every field, the consent record, the photos, and the customer's address when you press Reply. Messages you send to yourself normally appear in the Inbox. If they don't, look in All Mail or Sent.
 9. **If nothing arrives,** the site shows “could not be sent right now” and the reason is in hPanel's PHP error log, starting `[stc-enquiry] Send failed`. Common causes:
    - Wrong or revoked App Password: create a new one.
@@ -198,7 +195,7 @@ PHP_BIN=php NODE_PATH=/tmp/stc-tools/node_modules node tests/browser-tests.cjs t
 node scripts/prelaunch-check.mjs
 ```
 
-**Delivery status:** local delivery through Gmail SMTP was **verified on 4 Nov 2026**: three test enquiries sent from the local dev server arrived in Gmail with correct details, attachments and Reply-To. Delivery from the **live Hostinger server has not been tested yet**. Do this after deployment, following “Gmail SMTP setup, step by step” and the launch checklist.
+**Delivery status:** local delivery through Gmail SMTP was **verified on 4 Nov 2026**: three test enquiries sent from the local dev server arrived in Gmail with correct details, attachments and Reply-To. **Live delivery from Hostinger was verified on 4 Nov 2026** (owner confirmed): STC-20261104-62F53D (no photos) and STC-20261104-EFFAC1 (5 photos, phone preferred) arrived complete, with working attachments and Reply-To. The live form is enabled.
 
 ## Security notes for GitHub
 

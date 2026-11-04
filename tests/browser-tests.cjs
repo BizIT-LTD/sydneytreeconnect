@@ -399,8 +399,13 @@ async function fillValid(page, overrides = {}) {
       }
       const bad = [];
       const external = new Set();
+      const mailto = new Set();
       for (const entry of hrefs) {
         const [from, h] = entry.split("|");
+        if (/^mailto:/i.test(h)) {
+          mailto.add(h);
+          continue;
+        }
         if (/^https?:\/\//.test(h)) {
           external.add(h);
           continue;
@@ -415,6 +420,7 @@ async function fillValid(page, overrides = {}) {
         }
       }
       check(`All internal links and anchors resolve (${hrefs.size} checked)`, bad.length === 0, bad.join("\n        "));
+      check("Email links use only the confirmed privacy address", mailto.size > 0 && [...mailto].every((h) => h === "mailto:sydneytree278@gmail.com"), [...mailto].join(", "));
       fs.writeFileSync(path.join(shots, "external-links.txt"), [...external].join("\n") + "\n");
       await p.close();
     }
